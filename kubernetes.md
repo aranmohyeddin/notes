@@ -1,3 +1,4 @@
+# What is Kubernetes
 The following is from [This edx course](https://courses.edx.org/courses/course-v1:LinuxFoundationX+LFS158x+1T2018/course/)
 
  * keeps resource usage in check and optimize when neccessery
@@ -85,26 +86,27 @@ You need [KVM](https://wiki.archlinux.org/index.php/QEMU) hypervisor
 
 If you live in Iran you also need [tor](https://wiki.archlinux.org/index.php/tor) because fuck google.
 
-install kubectl
-
+#### install kubectl
 NOTE: if you are not living in Iran you don't need to torify it:P
 
     torify curl -LO https://storage.googleapis.com/kubernetes-release/release/$(torify curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl 
 
-add this to your .zshrc:
+add this to your .zshrc to enable autocomplete:
 
     if [ $commands[kubectl] ]; then
       source <(kubectl completion zsh)
     fi
 
-install minikube to create a all in one cluster in your single machine for learning:
+install minikube to create an all in one cluster in your single machine for learning:
 
 NOTE: This is likely not the latest version, see [here](https://github.com/kubernetes/minikube/releases)
 
     torify curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.33.1/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
 
-Then you should run `minikube start` but if you live in Iran you can't, so you do some stuff from [here](http://blog.programmableproduction.com/2018/03/08/Archlinux-Setup-Minikube-using-KVM/) and then:
-//Idk why I had so also start the services manually I thought enable also started them.
+Then you should run `minikube start` but if you live in Iran you can't.
+you do some stuff from [here](http://blog.programmableproduction.com/2018/03/08/Archlinux-Setup-Minikube-using-KVM/) and then:
+
+//Idk why I had to also start the services manually I thought enable also started them.
 
     sudo pacman -S dmidecode
     sudo usermod -aG libvirt aran
@@ -157,40 +159,30 @@ sudo kubeadm init --pod-network-cidr=<> --apiserver-advertise-address=<master-ip
 
 kubectl apply ...
 
-
-
-kubectl get nodes
-
-kubectl get pods --all-namespaces -o wide
-
-
+    kubectl get nodes
+    kubectl get pods --all-namespaces -o wide
 
 setup the dashboard before the nodes join the cluster
 
 dashboard on the master
-
-kubectl create -f https://raw...../src/deploy/recommended/kuber-dashboard.yaml
-
-kubectl proxy  ~> should be accessed on another url :-?
+    kubectl create -f https://raw...../src/deploy/recommended/kuber-dashboard.yaml
+    kubectl proxy  ~> should be accessed on another url :-?
 
 
 
 //to create a service account for your dashboard 
-
-kubectl create serviceaccount dashboard -n default
+    kubectl create serviceaccount dashboard -n default
 
 
 
 //To add cluster binding rules for ur roles on dashboard
-
-kubectl create clusterrolebinding dashboard-admin -n default \
-
-  --clusterrole=cluster-admin \
-
-  --serviceaccount=default:dashboard
-
-
+    kubectl create clusterrolebinding dashboard-admin -n default \
+      --clusterrole=cluster-admin \
+      --serviceaccount=default:dashboard
 
 // To get the secret key to be pasted into the dashboard token pwd. Copy outcomming secret key
+    kubectl get secret $(kubectl get serviceaccounts dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
 
-kubectl
+
+
+
