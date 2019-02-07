@@ -106,14 +106,15 @@ NOTE: This is likely not the latest version, see [here](https://github.com/kuber
 Then you should run `minikube start` but if you live in Iran you can't.
 you do some stuff from [here](http://blog.programmableproduction.com/2018/03/08/Archlinux-Setup-Minikube-using-KVM/) and then:
 
-//Idk why I had to also start the services manually I thought enable also started them.
+//reboot is needed for polkit to work etc.
 
     sudo pacman -S dmidecode
     sudo usermod -aG libvirt aran
-    sudo systemctl start libvirtd
-    sudo systemctl start virtlogd
+    sudo reboot 
     torify wget "https://storage.googleapis.com/minikube/iso/minikube-v0.33.1.iso"
     python -m http.server
+    minikube delete
+    minikube start --iso-url "http://localhost:8000/minikube-v0.33.1.iso" --vm-driver kvm2
     
 
 # Kubernetes building blocks
@@ -184,5 +185,45 @@ dashboard on the master
     kubectl get secret $(kubectl get serviceaccounts dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
 
 
+// get the command for joining a cluster:
+    kubeadm token create --print-join-command
 
+I think it takes a few minutes until the node becomes ready. anyways:
 
+    kubectl get nodes
+    kubectl describe nodes <node name> 
+
+are your friends
+
+createing deployment:
+
+    kubectl create deployment clinginx --image=nginx
+    kubectl describe deployment.apps clinginx
+    kubectl create service nodeport clinginxservice --tcp=80:80
+    kubectl get service
+    kubectl delete deployment <name>
+
+```
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rss-site
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: front-end
+          image: nginx
+          ports:
+            - containerPort: 80
+        - name: back-end
+          image: httpd
+          ports:
+            - containerPort: 80
+```
+    kubectl create -f yamlnginx.yaml
+    kubectl get deployments.
