@@ -79,8 +79,42 @@ Configuration modes:
  * Multi-Node etcd, Multi-Master, and Multi-Worker Installation
  * In this mode, etcd is configured in a clustered mode, outside the Kubernetes cluster, and the nodes connect to it. The master nodes are all configured in an HA mode, connecting to multiple worker nodes. This is the most advanced and recommended production setup.
 
+#installing minikube:
 
+You need [KVM](https://wiki.archlinux.org/index.php/QEMU) hypervisor
 
+If you live in Iran you also need [tor](https://wiki.archlinux.org/index.php/tor) because fuck google.
+
+install kubectl
+
+NOTE: if you are not living in Iran you don't need to torify it:P
+
+    torify curl -LO https://storage.googleapis.com/kubernetes-release/release/$(torify curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl 
+
+add this to your .zshrc:
+
+    if [ $commands[kubectl] ]; then
+      source <(kubectl completion zsh)
+    fi
+
+install minikube to create a all in one cluster in your single machine for learning:
+
+NOTE: This is likely not the latest version, see [here](https://github.com/kubernetes/minikube/releases)
+
+    torify curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.33.1/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+
+Then you should run `minikube start` but if you live in Iran you can't, so you do some stuff from [here](http://blog.programmableproduction.com/2018/03/08/Archlinux-Setup-Minikube-using-KVM/) and then:
+//Idk why I had so also start the services manually I thought enable also started them.
+
+    sudo pacman -S dmidecode
+    sudo usermod -aG libvirt aran
+    sudo systemctl start libvirtd
+    sudo systemctl start virtlogd
+    torify wget "https://storage.googleapis.com/minikube/iso/minikube-v0.33.1.iso"
+    python -m http.server
+    
+
+# Kubernetes building blocks
 
 
 The following is from [here](https://www.youtube.com/watch?v=F-p_7XaEC84):
