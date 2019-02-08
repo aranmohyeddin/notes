@@ -166,26 +166,30 @@ kubectl apply ...
 setup the dashboard before the nodes join the cluster
 
 dashboard on the master
-    kubectl create -f https://raw...../src/deploy/recommended/kuber-dashboard.yaml
-    kubectl proxy  ~> should be accessed on another url :-?
 
+    kubectl create -f https://raw...../src/deploy/recommended/kuber-dashboard.yaml
+    kubectl proxy
+
+[dashboard url](http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login)
 
 
 //to create a service account for your dashboard 
+
     kubectl create serviceaccount dashboard -n default
 
-
-
 //To add cluster binding rules for ur roles on dashboard
+
     kubectl create clusterrolebinding dashboard-admin -n default \
       --clusterrole=cluster-admin \
       --serviceaccount=default:dashboard
 
 // To get the secret key to be pasted into the dashboard token pwd. Copy outcomming secret key
+
     kubectl get secret $(kubectl get serviceaccounts dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
 
 
 // get the command for joining a cluster:
+
     kubeadm token create --print-join-command
 
 I think it takes a few minutes until the node becomes ready. anyways:
