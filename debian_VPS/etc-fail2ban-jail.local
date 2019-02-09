@@ -1,0 +1,26 @@
+[sshd]
+enabled = true
+
+[DEFAULT]
+mta = mail
+destemail = rnmhdn@gmail.com
+sender = fail2ban@glassacademy.ir
+
+# to ban & send an e-mail with whois report to the destemail.
+action = %(action_mw)s
+
+# same as action_mw but also send relevant log lines
+# action = %(action_mwl)s
+ 
+ignoreip = 127.0.0.1/8
+bantime = 3600
+
+findtime = 3600   # These lines combine to ban clients that fail
+maxretry = 6      # to authenticate 6 times within a half hour.
+
+[nginx-http-auth]
+
+enabled  = true
+filter   = nginx-http-auth
+port     = http,https
+logpath  = /var/log/nginx/error.log
