@@ -1,0 +1,22 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn/pid
+User=aran
+;because aran owns the code and shit
+Group=www-data
+;so that nginx can communicate with it well
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/aran/glassacademy
+ExecStart=/home/aran/.virtualenvs/glassacademy/bin/gunicorn --pid /run/gunicorn/pid \
+        --access-logfile - --workers 3 \
+        --bind unix:/run/gunicorn/socket glassacademy.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
